@@ -10,6 +10,8 @@ const UploadForm = ({ onSuccess, onError }) => {
   const [videoPreview, setVideoPreview] = useState(null);
   const fileInputRef = useRef(null);
 
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       validateAndSetFile(e.target.files[0]);
@@ -78,7 +80,7 @@ const UploadForm = ({ onSuccess, onError }) => {
         });
       }, 500);
 
-      const response = await fetch('http://localhost:5001/upload', {
+      const response = await fetch(`${API_BASE_URL}/upload`, {
         method: 'POST',
         body: formData,
       });

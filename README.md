@@ -40,56 +40,131 @@ capvid/
 - **Tailwind CSS**: Utility-first CSS framework
 - **React Icons**: Icon library
 
-## Setup Instructions
+## Deployment Options
 
-### Prerequisites
-- Python 3.8+
-- Node.js 14+
-- FFmpeg installed and accessible in PATH
+### 1. Local Development
 
-### Backend Setup
+For development and testing:
 
-1. Navigate to the backend directory:
+#### Backend
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+```
+
+#### Frontend
+```bash
+cd frontend
+npm install
+npm start
+```
+
+### 2. Docker Deployment (Recommended for Production)
+
+**Prerequisites:**
+- Docker
+- Docker Compose
+
+**Quick Start:**
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/Capvid-project.git
+cd Capvid-project
+
+# Deploy with Docker (Linux/Mac)
+chmod +x deploy.sh
+./deploy.sh
+
+# Deploy with Docker (Windows)
+deploy.bat
+```
+
+The application will be available at:
+- Frontend: http://localhost
+- Backend API: http://localhost:5001
+
+### 3. Heroku Deployment
+
+1. Install Heroku CLI
+2. Create a new Heroku app:
+   ```bash
+   heroku create your-capvid-app
+   heroku buildpacks:add --index 1 heroku-community/apt
+   heroku buildpacks:add --index 2 heroku/python
+   ```
+3. Set environment variables:
+   ```bash
+   heroku config:set FLASK_ENV=production
+   heroku config:set HOST=0.0.0.0
+   ```
+4. Deploy:
+   ```bash
+   git push heroku main
+   ```
+
+### 4. Manual Production Setup
+
+1. **Backend Setup:**
    ```bash
    cd backend
-   ```
-
-2. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install Python dependencies:
-   ```bash
-   pip install flask flask-cors openai-whisper
-   ```
-
-4. Run the Flask server:
-   ```bash
+   pip install -r requirements.txt
+   export FLASK_ENV=production
+   export HOST=0.0.0.0
+   export PORT=5001
    python app.py
    ```
 
-The backend will start on `http://localhost:5000`
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
+2. **Frontend Setup:**
    ```bash
    cd frontend
-   ```
-
-2. Install Node.js dependencies:
-   ```bash
    npm install
+   npm run build
+   
+   # Serve with a static file server (e.g., nginx, serve)
+   npx serve -s build -l 80
    ```
 
-3. Start the development server:
-   ```bash
-   npm start
-   ```
+## Environment Variables
 
-The frontend will start on `http://localhost:3000`
+### Backend
+- `FLASK_ENV`: Set to 'production' for production deployment
+- `HOST`: Host to bind to (default: 0.0.0.0)
+- `PORT`: Port to run on (default: 5001)
+- `FLASK_DEBUG`: Enable/disable debug mode (default: False)
+
+### Frontend
+- `REACT_APP_API_BASE_URL`: Backend API URL (default: http://localhost:5001)
+
+## Production Considerations
+
+1. **FFmpeg**: Ensure FFmpeg is installed on your production server
+2. **File Storage**: Configure persistent storage for uploads and processed files
+3. **Memory**: Video processing requires sufficient RAM (recommended: 2GB+)
+4. **Security**: 
+   - Use HTTPS in production
+   - Configure proper CORS settings
+   - Implement file upload limits
+   - Add authentication if needed
+
+## Docker Commands
+
+```bash
+# Build and start
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Stop services
+docker-compose down
+
+# Restart a service
+docker-compose restart backend
+```
 
 ## Usage
 

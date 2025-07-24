@@ -3,11 +3,13 @@ import React from 'react';
 import { FiCheckCircle, FiAlertTriangle, FiLoader, FiDownload, FiRefreshCw, FiClock, FiFileText, FiType } from 'react-icons/fi';
 
 const StatusDisplay = ({ status, error, onReset }) => {
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+  
   const handleDownload = async (downloadUrl) => {
     try {
       // Create a direct link to trigger download
       const link = document.createElement('a');
-      link.href = `http://localhost:5001${downloadUrl}`;
+      link.href = `${API_BASE_URL}${downloadUrl}`;
       link.download = ''; // Let browser determine filename
       link.target = '_blank';
       

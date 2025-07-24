@@ -1,3 +1,4 @@
-flask
-flask-cors
-openai-whisper
+flask==3.1.0
+flask-cors==5.0.0
+openai-whisper==20240930
+gunicorn==21.2.0
