@@ -4,12 +4,11 @@ import os
 import uuid
 import threading
 from helpers import generate_srt, overlay_subtitles
-from faster_whisper import WhisperModel
+import whisper
 
 app = Flask(__name__)
 
 # Updated CORS configuration for Render deployment
-# Replace with your actual frontend URL after deployment
 CORS(app, origins=[
     "https://your-frontend-url.onrender.com",  # Update this after frontend deployment
     "http://localhost:3000",  # For local development
@@ -31,20 +30,8 @@ def process_video_task(job_id, filepath, filename):
         print(f"Starting video processing for job {job_id}")
         job_status[job_id] = {'status': 'transcribing', 'filename': filename}
 
-        # Updated to use faster-whisper
-        model = WhisperModel("base", device="cpu")
-        segments, info = model.transcribe(filepath)
-        
-        # Convert segments to the expected format
-        segments_list = []
-        for segment in segments:
-            segments_list.append({
-                'start': segment.start,
-                'end': segment.end,
-                'text': segment.text
-            })
-        
-        result = {"segments": segments_list}
+        model = whisper.load_model("base")
+        result = model.transcribe(filepath)
 
         job_status[job_id] = {'status': 'generating_captions', 'filename': filename}
         
