@@ -1,8 +1,7 @@
 flask==3.1.0
 flask-cors==5.0.0
-faster-whisper==1.0.3
-torch>=2.5.0
-torchaudio>=2.5.0
-numpy>=1.24.0
+openai-whisper
+torch
+torchaudio
+numpy
 ffmpeg-python==0.2.0
-setuptools>=69.0.0
