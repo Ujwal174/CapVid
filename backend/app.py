@@ -4,7 +4,7 @@ import os
 import uuid
 import threading
 from helpers import generate_srt, overlay_subtitles
-import whisper
+from faster_whisper import WhisperModel
 
 app = Flask(__name__)
 
@@ -31,8 +31,20 @@ def process_video_task(job_id, filepath, filename):
         print(f"Starting video processing for job {job_id}")
         job_status[job_id] = {'status': 'transcribing', 'filename': filename}
 
-        model = whisper.load_model("base")
-        result = model.transcribe(filepath)
+        # Updated to use faster-whisper
+        model = WhisperModel("base", device="cpu")
+        segments, info = model.transcribe(filepath)
+        
+        # Convert segments to the expected format
+        segments_list = []
+        for segment in segments:
+            segments_list.append({
+                'start': segment.start,
+                'end': segment.end,
+                'text': segment.text
+            })
+        
+        result = {"segments": segments_list}
 
         job_status[job_id] = {'status': 'generating_captions', 'filename': filename}
         
