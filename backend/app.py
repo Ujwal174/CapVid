@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 # Updated CORS configuration for Render deployment
 CORS(app, origins=[
-    "https://your-frontend-url.onrender.com",  # Update this after frontend deployment
+    "https://capvid-frontend.onrender.com",  # Update this after frontend deployment
     "http://localhost:3000",  # For local development
     "https://localhost:3000"   # For local development with SSL
 ])
