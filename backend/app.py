@@ -7,13 +7,7 @@ from helpers import generate_srt, overlay_subtitles
 import whisper
 
 app = Flask(__name__)
-
-# Updated CORS configuration for Render deployment
-CORS(app, origins=[
-    "https://capvid-frontend.onrender.com",  # Update this after frontend deployment
-    "http://localhost:3000",  # For local development
-    "https://localhost:3000"   # For local development with SSL
-])
+CORS(app)
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
@@ -84,21 +78,6 @@ def process_video_task(job_id, filepath, filename):
             'error': str(e)
         }
 
-@app.route('/', methods=['GET'])
-def health_check():
-    """Health check endpoint for Render deployment verification"""
-    return jsonify({
-        'status': 'healthy',
-        'message': 'Capvid API is running',
-        'endpoints': {
-            'upload': '/upload',
-            'status': '/status/<job_id>',
-            'download': '/download/<filename>',
-            'download_srt': '/download_srt/<filename>',
-            'cleanup': '/cleanup'
-        }
-    }), 200
-
 @app.route('/upload', methods=['POST'])
 def upload_video():
     if 'video' not in request.files:
@@ -151,30 +130,19 @@ def download_srt(filename):
 
 @app.route('/cleanup', methods=['POST'])
 def cleanup_files():
-    try:
-        for folder in [UPLOAD_FOLDER, PROCESSED_FOLDER]:
-            if os.path.exists(folder):
-                for filename in os.listdir(folder):
-                    filepath = os.path.join(folder, filename)
-                    try:
-                        os.remove(filepath)
-                        print(f"Deleted: {filepath}")
-                    except Exception as e:
-                        print(f"Failed to delete {filepath}: {e}")
-        return jsonify({'message': 'Cleanup successful'}), 200
-    except Exception as e:
-        print(f"Cleanup failed: {str(e)}")
-        return jsonify({'error': f'Cleanup failed: {str(e)}'}), 500
+    for folder in [UPLOAD_FOLDER, PROCESSED_FOLDER]:
+        for filename in os.listdir(folder):
+            filepath = os.path.join(folder, filename)
+            try:
+                os.remove(filepath)
+            except Exception as e:
+                print(f"Failed to delete {filepath}: {e}")
+    return jsonify({'message': 'Cleanup successful'}), 200
 
 if __name__ == '__main__':
-    # Updated configuration for Render deployment
+    # Get port from environment variable or default to 5001
     port = int(os.environ.get('PORT', 5001))
     host = os.environ.get('HOST', '0.0.0.0')
     debug = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    
-    print(f"Starting Capvid API server on {host}:{port}")
-    print(f"Debug mode: {debug}")
-    print(f"Upload folder: {UPLOAD_FOLDER}")
-    print(f"Processed folder: {PROCESSED_FOLDER}")
     
     app.run(host=host, port=port, debug=debug)
