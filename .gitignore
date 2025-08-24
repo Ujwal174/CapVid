@@ -1,9 +1,37 @@
-# Dependencies
+# Dependencies and Libraries
 node_modules/
 venv/
 venv310/
 env/
 .venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Python package builds
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
 
 # Environment variables
 .env
@@ -15,49 +43,182 @@ env/
 # Production builds
 frontend/build/
 frontend/dist/
+frontend/.next/
+frontend/out/
 
-# Python cache files
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-
-# IDE files
-.vscode/
+# IDE files (keeping VS Code settings for development)
 .idea/
 *.swp
 *.swo
+.vscode/launch.json
+.vscode/tasks.json
 
 # OS files
 .DS_Store
 Thumbs.db
+*.tmp
+*.temp
 
 # Logs
 *.log
 logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 
 # Testing
 coverage/
 .nyc_output/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
 
-# Uploads and processed files
+# Uploads and processed files (temporary storage)
 backend/uploads/
 backend/processed/
 backend/test_uploads/
 backend/test_processed/
 backend/outputs/
+uploads/
+processed/
+temp/
+tmp/
 
 # Package manager files
-package-lock.json
 yarn.lock
+.pnp
+.pnp.js
 
-# Temporary files
-*.tmp
-*.temp
+# ESLint cache
+.eslintcache
 
-# Docker
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+jspm_packages/
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Parcel-bundler cache (https://parceljs.org/)
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Stylelint cache
+.stylelintcache
+
+# Removed deployment files (no longer needed)
+Dockerfile
+docker-compose.yml
 .dockerignore
+deploy.sh
+deploy.bat
+deploy-temp-storage.bat
+Procfile
+runtime.txt
+Aptfile
+nginx.conf
+build.sh
 
-# Deployment
-.deploy/
+# Machine learning models (can be large)
+*.pth
+*.pt
+*.ckpt
+*.pkl
+*.joblib
+
+# Data files
+*.csv
+*.json.gz
+*.tar.gz
+*.zip
+
+# Font files (if not essential)
+*.woff
+*.woff2
+*.ttf
+*.otf
+stardom.css
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/

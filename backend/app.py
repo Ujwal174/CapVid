@@ -234,6 +234,19 @@ def download_file(filename):
     # Extract job_id from filename
     job_id = filename.split('_')[0]
     
+    # Get original filename from job status
+    original_filename = "video"  # default fallback
+    if job_id in job_status and 'filename' in job_status[job_id]:
+        original_filename = job_status[job_id]['filename']
+        # Remove extension from original filename
+        original_name_without_ext = os.path.splitext(original_filename)[0]
+    else:
+        original_name_without_ext = "video"
+    
+    # Generate CapVid filename with original filename
+    original_extension = filename.split('.')[-1]
+    capvid_filename = f"CapVid-{original_name_without_ext}.{original_extension}"
+    
     def cleanup_after_download():
         # Schedule cleanup after download
         time.sleep(2)  # Give time for download to complete
@@ -242,7 +255,12 @@ def download_file(filename):
     # Start cleanup in background
     threading.Thread(target=cleanup_after_download, daemon=True).start()
     
-    response = send_from_directory(app.config['PROCESSED_FOLDER'], filename, as_attachment=True)
+    response = send_from_directory(
+        app.config['PROCESSED_FOLDER'], 
+        filename, 
+        as_attachment=True,
+        download_name=capvid_filename
+    )
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     response.headers['Access-Control-Allow-Methods'] = 'GET'

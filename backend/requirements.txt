@@ -1,7 +1,12 @@
+# Core Flask framework and CORS support
 flask==3.1.0
 flask-cors==5.0.0
+
+# AI/ML dependencies for video transcription
 openai-whisper
 torch
 torchaudio
 numpy
+
+# Video processing
 ffmpeg-python==0.2.0
