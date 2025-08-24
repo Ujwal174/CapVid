@@ -1,22 +1,45 @@
 // src/components/StatusDisplay.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FiCheckCircle, FiAlertTriangle, FiLoader, FiDownload, FiRefreshCw, FiClock, FiFileText, FiType } from 'react-icons/fi';
 
-const StatusDisplay = ({ status, error, onReset }) => {
+const StatusDisplay = ({ status, error, onReset, jobId }) => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
   
+  useEffect(() => {
+    // Cleanup on page unload/refresh
+    const handleBeforeUnload = () => {
+      if (jobId && (status?.status === 'completed' || status?.status === 'failed')) {
+        // Use sendBeacon for reliable cleanup on page unload
+        navigator.sendBeacon(`${API_BASE_URL}/cleanup/${jobId}`, '');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [jobId, status, API_BASE_URL]);
+
   const handleDownload = async (downloadUrl) => {
     try {
-      // Create a direct link to trigger download
       const link = document.createElement('a');
       link.href = `${API_BASE_URL}${downloadUrl}`;
-      link.download = ''; // Let browser determine filename
+      link.download = '';
       link.target = '_blank';
       
-      // Append to body, click, and remove
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Auto cleanup after download
+      setTimeout(() => {
+        if (jobId) {
+          fetch(`${API_BASE_URL}/cleanup/${jobId}`, { method: 'POST' })
+            .catch(err => console.log('Cleanup request failed:', err.message || err));
+        }
+      }, 3000); // 3 seconds delay to ensure download started
+      
     } catch (error) {
       console.error('Download failed:', error);
       alert('Download failed. Please try again.');
@@ -24,18 +47,24 @@ const StatusDisplay = ({ status, error, onReset }) => {
   };
 
   if (error) {
+    const isJobExpired = typeof error === 'string' && error.includes('expired');
+    
     return (
       <div className="p-6 sm:p-8 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-900 bg-opacity-20 mb-4">
           <FiAlertTriangle className="h-8 w-8 text-red-400" />
         </div>
-        <h3 className="text-xl font-medium text-white">Processing Failed</h3>
-        <p className="mt-4 text-sm text-white text-opacity-70">{error}</p>
+        <h3 className="text-xl font-medium text-white">
+          {isJobExpired ? 'Session Expired' : 'Processing Failed'}
+        </h3>
+        <p className="mt-4 text-sm text-white text-opacity-70">
+          {typeof error === 'string' ? error : 'An error occurred during processing.'}
+        </p>
         <button
           onClick={onReset}
           className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-md text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150"
         >
-          <FiRefreshCw className="mr-2" /> Try Again
+          <FiRefreshCw className="mr-2" /> {isJobExpired ? 'Start Over' : 'Try Again'}
         </button>
       </div>
     );

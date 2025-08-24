@@ -31,7 +31,7 @@ const UploadForm = ({ onSuccess, onError }) => {
     }
     
     setFile(file);
-    onError(null); // Clear any previous errors
+    onError(''); // Clear any previous errors
     
     // Create video preview URL
     const previewURL = URL.createObjectURL(file);
@@ -80,6 +80,7 @@ const UploadForm = ({ onSuccess, onError }) => {
         });
       }, 500);
 
+      console.log('Uploading to:', `${API_BASE_URL}/upload`);
       const response = await fetch(`${API_BASE_URL}/upload`, {
         method: 'POST',
         body: formData,
@@ -88,7 +89,9 @@ const UploadForm = ({ onSuccess, onError }) => {
       clearInterval(progressInterval);
       setUploadProgress(100);
 
+      console.log('Upload response status:', response.status);
       const data = await response.json();
+      console.log('Upload response data:', data);
       
       if (response.ok) {
         // Clean up video preview URL
@@ -101,7 +104,8 @@ const UploadForm = ({ onSuccess, onError }) => {
         setUploading(false);
       }
     } catch (err) {
-      onError('Network error. Please try again.');
+      console.error('Upload error:', err);
+      onError(err.message || 'Network error. Please try again.');
       setUploading(false);
     }
   };
