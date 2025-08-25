@@ -96,7 +96,42 @@ git clone https://github.com/0xUjwal/CapVid.git
 cd CapVid
 ```
 
-### 2. Backend Setup
+### 2. Install FFmpeg (Windows)
+
+**Most systems don't have FFmpeg pre-installed, which is required for video processing.**
+
+#### Quick Install via CMD (Windows 10+)
+
+Open **Command Prompt as Administrator**:
+
+```cmd
+cd C:\
+
+curl -L -o ffmpeg.zip https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+
+mkdir C:\ffmpeg
+
+tar -xf ffmpeg.zip -C C:\ffmpeg --strip-components=1
+
+setx /M PATH "%PATH%;C:\ffmpeg\bin"
+```
+
+**Verify installation** (close and reopen CMD):
+```cmd
+ffmpeg -version
+```
+
+#### Alternative for macOS/Linux:
+
+```bash
+# macOS (with Homebrew)
+brew install ffmpeg
+
+# Ubuntu/Debian
+sudo apt update && sudo apt install ffmpeg
+```
+
+### 3. Backend Setup
 
 ```bash
 cd backend
@@ -119,7 +154,7 @@ python app.py
 
 The backend will run on `http://localhost:5001`
 
-### 3. Frontend Setup
+### 4. Frontend Setup
 
 ```bash
 cd frontend
@@ -334,11 +369,23 @@ curl http://localhost:5001/system_info
 ### Common Issues
 
 1. **FFmpeg Not Found**
+   
+   **Windows (CMD Method):**
+   ```cmd
+   # Open CMD as Administrator, then run:
+   cd C:\
+   curl -L -o ffmpeg.zip https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+   mkdir C:\ffmpeg
+   tar -xf ffmpeg.zip -C C:\ffmpeg --strip-components=1
+   setx /M PATH "%PATH%;C:\ffmpeg\bin"
+   # Restart terminal and verify: ffmpeg -version
+   ```
+   
+   **macOS/Linux:**
    ```bash
-   # Install FFmpeg
-   # Ubuntu/Debian: sudo apt install ffmpeg
    # macOS: brew install ffmpeg
-   # Windows: Download from https://ffmpeg.org/
+   # Ubuntu/Debian: sudo apt install ffmpeg
+   # CentOS/RHEL: sudo yum install ffmpeg
    ```
 
 2. **Memory Issues**
