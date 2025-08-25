@@ -78,7 +78,7 @@ const AnimatedUploadForm = ({ onSuccess, onError }) => {
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'https://api.capvid.app';
     const uploadUrl = `${apiBaseUrl}/upload`;
     
-    console.log('Uploading to:', uploadUrl); // Should show https://api.capvid.app/upload
+    console.log('Uploading to:', uploadUrl);
 
     try {
       setUploading(true);
