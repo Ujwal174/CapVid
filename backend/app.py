@@ -11,12 +11,20 @@ from helpers import generate_srt, overlay_subtitles
 import whisper
 
 app = Flask(__name__)
-CORS(app, origins=[
-    "https://capvid.app",
-    "https://www.capvid.app",
-    "http://localhost:3000",  # for local development
-    "https://localhost:3000"
-])
+
+# Configure CORS for Vercel frontend
+CORS(app, 
+     origins=[
+         "https://capvid.app",
+         "https://www.capvid.app",
+         "http://localhost:3000",   # for local development
+         "https://localhost:3000"   # for local development with HTTPS
+     ],
+     methods=['GET', 'POST', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization'],
+     supports_credentials=True,
+     max_age=3600
+)
 
 # Use system temporary directory with size limit
 TEMP_STORAGE_LIMIT = 250 * 1024 * 1024  # 250MB in bytes
