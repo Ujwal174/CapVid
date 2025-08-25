@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 const AnimatedUploadForm = ({ onSuccess, onError }) => {
   const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [dragActive, setDragActive] = useState(false);
@@ -63,49 +64,46 @@ const AnimatedUploadForm = ({ onSuccess, onError }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) return;
+    
+    if (!file || !fileName) {
+      alert('Please select a file and enter a name');
+      return;
+    }
 
-    setUploading(true);
-    setUploadProgress(0);
     const formData = new FormData();
     formData.append('video', file);
+    formData.append('filename', fileName);
+
+    // ✅ Use environment variable
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'https://api.capvid.app';
+    const uploadUrl = `${apiBaseUrl}/upload`;
+    
+    console.log('Uploading to:', uploadUrl); // Should show https://api.capvid.app/upload
 
     try {
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 500);
+      setUploading(true);
+      setUploadProgress(0);
 
-      console.log('Uploading to:', `${API_BASE_URL}/upload`);
-      const response = await fetch(`${API_BASE_URL}/upload`, {
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         body: formData,
       });
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      console.log('Upload response status:', response.status);
-      const data = await response.json();
-      console.log('Upload response data:', data);
-      
-      if (response.ok) {
-        if (videoPreview) {
-          URL.revokeObjectURL(videoPreview);
-        }
-        onSuccess(data.job_id, file);
-      } else {
-        onError(data.error || 'Upload failed. Please try again.');
-        setUploading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } catch (err) {
-      console.error('Upload error:', err);
-      onError(err.message || 'Network error. Please try again.');
+
+      const result = await response.json();
+      console.log('Upload successful:', result);
+      
+      if (videoPreview) {
+        URL.revokeObjectURL(videoPreview);
+      }
+      onSuccess(result.job_id, file);
+    } catch (error) {
+      console.error('Upload failed:', error);
+      onError('Upload failed. Please try again.');
+    } finally {
       setUploading(false);
     }
   };
@@ -121,6 +119,7 @@ const AnimatedUploadForm = ({ onSuccess, onError }) => {
       e.stopPropagation();
     }
     setFile(null);
+    setFileName('');
     if (videoPreview) {
       URL.revokeObjectURL(videoPreview);
       setVideoPreview(null);
