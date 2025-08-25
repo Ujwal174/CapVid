@@ -11,7 +11,12 @@ from helpers import generate_srt, overlay_subtitles
 import whisper
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[
+    "https://capvid.app",
+    "https://www.capvid.app",
+    "http://localhost:3000",  # for local development
+    "https://localhost:3000"
+])
 
 # Use system temporary directory with size limit
 TEMP_STORAGE_LIMIT = 250 * 1024 * 1024  # 250MB in bytes
