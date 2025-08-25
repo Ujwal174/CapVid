@@ -10,3 +10,6 @@ numpy
 
 # Video processing
 ffmpeg-python==0.2.0
+
+# System monitoring and utilities
+psutil==6.1.0

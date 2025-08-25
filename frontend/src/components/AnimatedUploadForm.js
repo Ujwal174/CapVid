@@ -146,18 +146,33 @@ const AnimatedUploadForm = ({ onSuccess, onError }) => {
         signal: controller.signal,
         headers: {
           // Don't set Content-Type for FormData, let browser set it with boundary
+        },
+        // Add retry logic
+        retry: {
+          retries: 2,
+          retryDelay: 1000
         }
       });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const errorText = await response.text();
+        let errorText;
+        try {
+          errorText = await response.text();
+        } catch (e) {
+          errorText = `HTTP ${response.status}`;
+        }
         throw new Error(`Upload failed: ${response.status} ${response.statusText}. ${errorText}`);
       }
 
       const result = await response.json();
       console.log('Upload successful:', result);
+      
+      // Validate response structure
+      if (!result.job_id) {
+        throw new Error('Invalid response: missing job_id');
+      }
       
       // Cleanup preview URL
       if (videoPreview) {
@@ -176,8 +191,14 @@ const AnimatedUploadForm = ({ onSuccess, onError }) => {
       
       if (error.name === 'AbortError') {
         onError('Upload timed out. Please try again with a smaller file.');
-      } else if (error.message.includes('Failed to fetch')) {
+      } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
         onError('Network error. Please check your connection and try again.');
+      } else if (error.message.includes('507')) {
+        onError('Server storage is full. Please try again later.');
+      } else if (error.message.includes('413')) {
+        onError('File too large. Please use a smaller file.');
+      } else if (error.message.includes('400')) {
+        onError('Invalid file format. Please use MP4, MOV, AVI, MKV, or WebM.');
       } else {
         onError(`Upload failed: ${error.message}`);
       }
